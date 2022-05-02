@@ -1,0 +1,10 @@
+xdq.pdf
+*.log
+*.out
+*.fls
+*.blg
+*.bbl
+*.aux
+*.auctex-auto
+*.fdb_latexmk
+*.cut
