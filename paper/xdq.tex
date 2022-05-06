@@ -79,7 +79,7 @@
 }
 
 \author{Jesper Dangaard Brouer}
-\email{brouer@redhat.com}
+\email{jbrouer@redhat.com}
 \affiliation{%
   \institution{Red hat}
   \country{Denmark}
@@ -111,7 +111,7 @@ The Linux eXpress Data Path, or XDP, has found numerous uses in the industry, su
 
 \section{Introduction}
 
-The Linux kernel is a widely used platform in devices that range from IoT, cellphones, home and enterprise routers to servers and cloud offerings. One of the prominent technologies of the Linux kernel is the BPF~\footnote{TODO} framework~\cite{ebpf}, which gives us a flexible way to extend the kernel. The BPF framework is an in-kernel runtime environment that allows domain-specific code to execute within the kernel safely using predefined hooks. One such hook is the Linux eXpress Data Pat~\cite{hoiland2018express}, or XDP, which introduces a fast data-path within the Linux kernel and has found numerous uses in the industry such as Denial-of-Service~\cite{bertin2017xdp}~\cite{miano2019introducing} (DoS) attack-mitigation, load-balancers, and intrusion prevention systems.
+The Linux kernel is a widely used platform in devices that range from IoT, cellphones, home and enterprise routers to servers and cloud offerings. One of the prominent technologies of the Linux kernel is the BPF~\footnote{TODO} framework~\cite{ebpf}, which gives us a flexible way to extend the kernel. The BPF framework is an in-kernel runtime environment that allows domain-specific code to execute within the kernel safely using predefined hooks. One such hook is the Linux eXpress Data Path~\cite{hoiland2018express}, or XDP, which introduces a fast data-path within the Linux kernel and has found numerous uses in the industry such as Denial-of-Service~\cite{bertin2017xdp}~\cite{miano2019introducing} (DoS) attack-mitigation, load-balancers, and intrusion prevention systems.
 
 XDP provides a high-performance programmable network data path and allows programmers to process packets early out of the driver and even bypass the kernel's network stack for increased performance. While XDP excels in forwarding packets, it currently has no mechanism for queuing or reordering packets and can not implement traffic scheduling policies. Packet scheduling is a common task on network equipment, and most devices that provide packet scheduling algorithms provide only a handful of predefined packet schedulers. The Linux kernel's network stack provides a traffic control system called Queuing discipline (Qdisc) capable of packet scheduling. However, it does not provide the means of implementing complete packet schedulers in BPF, nor can it be used in XDP when bypassing the kernel's networking stack. Therefore, a new extension to XDP is needed.
 
@@ -137,7 +137,7 @@ Packet schedulers provide the means of controlling the policy and quality requir
   \label{fig:round_robin}
 \end{figure}
 
-For example, if we wanted to give equal throughput to three different clients that have equal size packets, we could use the round-robin scheduler~\cite{nagle1987packet}, depicted in \Cref{fig:round_robin}. This scheduler sorts the incoming packets by flow into different queues and dequeues the packets by taking one packet from each flow.
+For example, if we wanted to give equal throughput to three different clients that have equal size packets, we could use the round-robin scheduler~\cite{nagle1987packet}, depicted in \Cref{fig:round_robin}. This scheduler sorts the incoming packets by flow into different queues and dequeues the packets by taking one packet from each queue.
 
 %\begin{figure}
 %  \includegraphics[width=\linewidth]{traffic-policy.pdf}
@@ -164,7 +164,7 @@ Queue management is also an essential topic related to packet scheduling and is 
   \label{fig:network_overview}
 \end{figure}
 
-The Linux kernel networking stack is highly mature and a flexible piece of software. It contains a hardware abstraction layer, a traffic control layer responsible for routing and firewall rules, and layers responsible for handling the TCP/IP networking layers. Part of the traffic control layer is the queueing discipline layer, or the Qdisc layer for short. This layer gives the Linux kernel flexible packet scheduling capabilities and an interface to create new packet schedulers as loadable kernel modules. However, due to the immense speed increases in modern network devices, the kernel's networking stack has become a bottleneck. This obstacle has prompted network vendors and researchers to create alternative solutions to mitigate this performance bottleneck. One such solution is the Data Plane Development Ki~\cite{dpdk} (DPDK) which entirely bypasses the Linux kernel and communicates directly to the networking hardware. An alternative solution to completely bypassing the Linux kernel, which we describe in \Cref{sec:xdp}, is XDP, which creates a fast data path within the Linux kernel while retaining the kernel and user-space separation. \Cref{fig:network_overview} provides a simplified diagram of the Linux kernel's networking infrastructure depicting the relevant parts related to our work in this paper. The diagram shows how XDP can steer traffic either through the network stack or bypass it altogether.
+The Linux kernel networking stack is highly mature and a flexible piece of software. It contains a hardware abstraction layer, a traffic control layer responsible for routing and firewall rules, and layers responsible for handling the TCP/IP networking layers. Part of the traffic control layer is the queueing discipline layer, or the Qdisc layer for short. This layer gives the Linux kernel flexible packet scheduling capabilities and an interface to create new packet schedulers as loadable kernel modules. However, due to the immense speed increases in modern network devices, the kernel's networking stack has become a bottleneck. This obstacle has prompted network vendors and researchers to create alternative solutions to mitigate this performance bottleneck. One such solution is the Data Plane Development Ki~\cite{dpdk} (DPDK), which entirely bypasses the Linux kernel and communicates directly to the networking hardware. An alternative solution to completely bypassing the Linux kernel is XDP (see also \Cref{sec:xdp}). XDP creates a fast data path within the Linux kernel while retaining the kernel and user-space separation. \Cref{fig:network_overview} provides a simplified diagram of the Linux kernel's networking infrastructure depicting the relevant parts related to our work in this paper. The diagram shows how XDP can steer traffic either through the network stack or bypass it altogether.
 
 
 \section{Programmable Packet Schedulers}
